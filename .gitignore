@@ -172,3 +172,5 @@ depot/*
 coqui_recipes/*
 local_scripts/*
 coqui_demos/*
+dataset/*
+checkpoints/*

@@ -85,6 +85,9 @@ dependencies = [
     "huggingface-hub>=0.36.0",
     # XTTS
     "num2words>=0.5.14",
+    
+    ######## NEW DEPS SVABA
+    "pandas",
 ]
 
 [project.optional-dependencies]
