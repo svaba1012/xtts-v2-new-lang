@@ -6,6 +6,7 @@ from tokenizers.models import BPE
 from tokenizers.pre_tokenizers import Whitespace
 from tokenizers.trainers import BpeTrainer
 import json
+import torch
 
 def combine_tokenizers(old_tokenizer, new_tokenizer, save_dir):
     # Load both the json files, take the union, and store it
@@ -86,6 +87,34 @@ def adjust_config(args):
     config["languages"] += [args.language]
     with open(config_path, 'w') as f:
         json.dump(config, f, indent=4)
+        
+def adjust_embeddings():
+    
+    # Load the checkpoint
+    checkpoint = torch.load("model.pth", map_location="cpu")
+    state_dict = checkpoint["model_state_dict"]
+
+    # Resize embeddings
+    old_emb = state_dict["gpt.text_embedding.weight"]
+    new_vocab_size = 8464  # your new vocab
+    new_emb = torch.nn.Parameter(torch.randn(new_vocab_size, old_emb.size(1)))  # random init
+    new_emb[:old_emb.size(0), :] = old_emb
+    state_dict["gpt.text_embedding.weight"] = new_emb
+
+    # Text head
+    old_head = state_dict["gpt.text_head.weight"]
+    new_head = torch.nn.Parameter(torch.randn(new_vocab_size, old_head.size(1)))
+    new_head[:old_head.size(0), :] = old_head
+    state_dict["gpt.text_head.weight"] = new_head
+
+    # Text head bias
+    old_bias = state_dict["gpt.text_head.bias"]
+    new_bias = torch.nn.Parameter(torch.zeros(new_vocab_size))
+    new_bias[:old_bias.size(0)] = old_bias
+    state_dict["gpt.text_head.bias"] = new_bias
+
+    # Save back
+    torch.save({"model_state_dict": state_dict}, "model_resized.pth")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -99,3 +128,4 @@ if __name__ == "__main__":
 
     extend_tokenizer(args)
     adjust_config(args)
+    adjust_embeddings()
