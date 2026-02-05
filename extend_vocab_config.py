@@ -93,7 +93,7 @@ def adjust_embeddings():
     # Load the checkpoint
     checkpoint = torch.load(os.path.join(args.output_path, "XTTS_v2.0_original_model_files/model.pth"), map_location="cpu")
     print(checkpoint.keys())
-    state_dict = checkpoint["model_state_dict"]
+    state_dict = checkpoint["model"]
 
     # Resize embeddings
     old_emb = state_dict["gpt.text_embedding.weight"]
@@ -115,7 +115,7 @@ def adjust_embeddings():
     state_dict["gpt.text_head.bias"] = new_bias
 
     # Save back
-    torch.save({"model_state_dict": state_dict}, "model_resized.pth")
+    torch.save({"model": state_dict}, "model_resized.pth")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
