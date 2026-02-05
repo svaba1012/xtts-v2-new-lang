@@ -95,24 +95,22 @@ def adjust_embeddings():
     print(checkpoint.keys())
     state_dict = checkpoint["model"]
 
+    new_vocab_size = 8464  # your new vocab
     # Resize embeddings
     old_emb = state_dict["gpt.text_embedding.weight"]
-    new_vocab_size = 8464  # your new vocab
-    new_emb = torch.nn.Parameter(torch.randn(new_vocab_size, old_emb.size(1)))  # random init
-    new_emb[:old_emb.size(0), :] = old_emb.clone()
-    state_dict["gpt.text_embedding.weight"] = new_emb
-
     # Text head
     old_head = state_dict["gpt.text_head.weight"]
-    new_head = torch.nn.Parameter(torch.randn(new_vocab_size, old_head.size(1)))
-    new_head[:old_head.size(0), :] = old_head.clone()
-    state_dict["gpt.text_head.weight"] = new_head
-
     # Text head bias
     old_bias = state_dict["gpt.text_head.bias"]
-    new_bias = torch.nn.Parameter(torch.zeros(new_vocab_size))
-    new_bias[:old_bias.size(0)] = old_bias.clone()
-    state_dict["gpt.text_head.bias"] = new_bias
+
+    new_emb = torch.cat([old_emb, torch.randn(new_vocab_size - old_emb.size(0), old_emb.size(1))], dim=0)
+    new_head = torch.cat([old_head, torch.randn(new_vocab_size - old_head.size(0), old_head.size(1))], dim=0)
+    new_bias = torch.cat([old_bias, torch.zeros(new_vocab_size - old_bias.size(0))], dim=0)
+
+    # Wrap in nn.Parameter
+    state_dict["gpt.text_embedding.weight"] = torch.nn.Parameter(new_emb)
+    state_dict["gpt.text_head.weight"] = torch.nn.Parameter(new_head)
+    state_dict["gpt.text_head.bias"] = torch.nn.Parameter(new_bias)
 
     # Save back
     torch.save({"model": state_dict}, "model_resized.pth")
