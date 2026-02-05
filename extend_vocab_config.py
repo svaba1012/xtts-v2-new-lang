@@ -92,6 +92,7 @@ def adjust_embeddings():
     
     # Load the checkpoint
     checkpoint = torch.load(os.path.join(args.output_path, "XTTS_v2.0_original_model_files/model.pth"), map_location="cpu")
+    print(checkpoint.keys())
     state_dict = checkpoint["model_state_dict"]
 
     # Resize embeddings
