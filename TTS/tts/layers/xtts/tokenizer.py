@@ -477,6 +477,7 @@ _ordinal_re = {
     "hu": re.compile(r"([0-9]+)(\.|adik|edik|odik|edik|ödik|ödike|ik)"),
     "ko": re.compile(r"([0-9]+)(번째|번|차|째)"),
     "hi": re.compile(r"([0-9]+)(st|nd|rd|th)"),  # To check
+    "sr": re.compile(r"([0-9]+)\.(?=\s|$)"),  # In Serbian, a dot is often used after the number to indicate ordinals.
 }
 _number_re = re.compile(r"[0-9]+")
 _currency_re = {
