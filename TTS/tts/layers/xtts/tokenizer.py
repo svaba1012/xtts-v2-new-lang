@@ -243,6 +243,15 @@ _abbreviations = {
             # Hindi doesn't typically use abbreviations in the same way as Latin-based scripts.
         ]
     ],
+    
+    "sr": [
+        (re.compile(f"\\b{x[0]}\\.", re.IGNORECASE), x[1])
+        for x in [
+            ("гђа", "госпођа"),  
+            ("гдин", "господин"),  
+            ("др", "доктор"),
+        ]
+    ],
 }
 
 
