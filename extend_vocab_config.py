@@ -113,7 +113,8 @@ def adjust_embeddings():
     state_dict["gpt.text_head.bias"] = torch.nn.Parameter(new_bias)
 
     # Save back
-    torch.save({"model": state_dict}, "model_resized.pth")
+    torch.save({"model": state_dict}, os.path.join(args.output_path, "XTTS_v2.0_original_model_files/model.pth"))
+    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
