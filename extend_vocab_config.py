@@ -95,7 +95,7 @@ def adjust_embeddings():
     print(checkpoint.keys())
     state_dict = checkpoint["model"]
 
-    new_vocab_size = 8464  # your new vocab
+    new_vocab_size = 8454  # your new vocab
     # Resize embeddings
     old_emb = state_dict["gpt.text_embedding.weight"]
     # Text head
