@@ -78,7 +78,9 @@ def extend_tokenizer(args):
 
     tokenizer.save(os.path.join(root, "vocab.json"))
 
+    new_vocab_size = tokenizer.get_vocab_size(with_added_tokens=True)
     os.system(f'rm -rf {old_tokenizer_path} {new_tokenizer_path} {merged_tokenizer_path}')
+    return new_vocab_size
 
 def adjust_config(args):
     config_path = os.path.join(args.output_path, "XTTS_v2.0_original_model_files/config.json")
@@ -88,14 +90,14 @@ def adjust_config(args):
     with open(config_path, 'w') as f:
         json.dump(config, f, indent=4)
         
-def adjust_embeddings():
+def adjust_embeddings(new_vocab_size):
     
     # Load the checkpoint
     checkpoint = torch.load(os.path.join(args.output_path, "XTTS_v2.0_original_model_files/model.pth"), map_location="cpu", weights_only=False)
     print(checkpoint.keys())
     state_dict = checkpoint["model"]
 
-    new_vocab_size = 8454  # your new vocab
+    # new_vocab_size = 8454  # your new vocab
     # Resize embeddings
     old_emb = state_dict["gpt.text_embedding.weight"]
     # Text head
@@ -126,6 +128,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    extend_tokenizer(args)
+    new_vocab_size = extend_tokenizer(args)
     adjust_config(args)
-    adjust_embeddings()
+    adjust_embeddings(new_vocab_size)
